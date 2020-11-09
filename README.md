@@ -1,4 +1,4 @@
-# spas-frontend
+# Frontend starter
 
 ## Project setup
 ```
