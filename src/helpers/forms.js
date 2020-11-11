@@ -23,22 +23,56 @@
  */
 
 export const createForm = (fields,data = undefined) => {
+
     const formModel = {};
-    fields.forEach( element => {
-        if(data){
-            formModel[element.name] = data[element.name];
-        }
-        else{
-            if( element.type == 'checkbox'){
-                formModel[element.name] = [];
-            }else{
-                formModel[element.name] = ''
+    const formFields = {};
+    const formGrid = [];
+
+    // create formModel and formFields
+    fields.map( item => {
+        if(!Array.isArray(item))
+            return [item]
+        else
+            return item
+    }).forEach( line => {
+        // if we don't want multiple columns
+        const gridLine = [];
+        line.forEach( element => {
+            gridLine.push(element.name);
+            //create field
+            formFields[element.name] = element;
+            // create model
+            if(data[element.name]){
+                switch(element.type){
+                    case 'prepend':
+                        const prepend = data[element.name];
+                        formModel[element.name] = prepend;    
+                        break;
+                    default:
+                        formModel[element.name] =  data[element.name];
+                        break;
+                }
             }
-        }
+            else{
+                switch(element.type){
+                    case 'checkbox':
+                        formModel[element.name] = [];
+                        break;
+                    case 'prepend':
+                        formModel[element.name] = element.prepend ? [element.prepend,""] : [];
+                        break;
+                    default:
+                        formModel[element.name] = ''
+                    break;
+                }
+            }
+        })
+        formGrid.push(gridLine);
     })
 
     return {
-        fields: fields,
+        grid: formGrid,
+        fields: formFields,
         values: formModel
     }
 }
